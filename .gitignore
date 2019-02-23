@@ -82,3 +82,13 @@ typings/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+!.idea
+.idea/*
+!.idea/runConfigurations
+!.idea/runConfigurations/*
+!.idea/dictionaries
+*.iws
+*.iml
+*.ipr
+/out/
