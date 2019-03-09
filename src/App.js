@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import firebase from "./firebase.js";
-import QRCode from "qrcode.react";
+import LocationCode from "./LocationCode.js";
 
 const users = ["Liljana", "Cameron", "Matt", "Layne", "Steve", "Alan", "James"];
 
@@ -14,15 +14,6 @@ const loginToApp = initials => {
       people: firebase.firestore.FieldValue.arrayUnion(initials)
     });
 };
-
-const LocationCode = () => (
-  <div>
-    <br />
-    <QRCode size={300} value={window.location.href} />
-    <br />
-    <h1>{window.location.href.replace(window.location.search, "")}</h1>
-  </div>
-);
 
 const Start = ({ screenViewAction, loginAction }) => (
   <div>
@@ -86,6 +77,7 @@ class ScreenWaitingView extends Component {
             </h2>
           </div>
         )}
+        <br />
         <LocationCode />
       </div>
     );
