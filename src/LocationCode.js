@@ -5,7 +5,7 @@ const LocationCode = () => {
   const url = window.location.href.replace(window.location.search, "");
   return (
     <div>
-      <QRCode size={300} value={url} />
+      <QRCode size={300} value={url} level={"H"} />
       <br />
       <h1>{url}</h1>
     </div>
