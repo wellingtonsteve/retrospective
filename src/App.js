@@ -129,7 +129,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: "start"
+      page: "start",
+      name: null
     };
   }
 
@@ -142,7 +143,8 @@ class App extends Component {
   login = initials => {
     loginToApp(initials).then(() =>
       this.setState({
-        page: initials
+        page: "userview",
+        name: initials
       })
     );
   };
@@ -166,7 +168,7 @@ class App extends Component {
     } else {
       return (
         <div className="App">
-          <UserView user={this.state.page} />
+          <UserView user={this.state.name} />
         </div>
       );
     }
