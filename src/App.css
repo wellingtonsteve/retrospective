@@ -31,3 +31,9 @@
     transform: rotate(360deg);
   }
 }
+
+
+.userlist button {
+  margin: 2px;
+  font-size: 40pt
+}
