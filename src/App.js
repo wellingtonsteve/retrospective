@@ -41,6 +41,7 @@ const Start = ({ screenViewAction, loginAction }) => (
 class ScreenWaitingView extends Component {
   constructor(props) {
     super(props);
+    this.db = firebase.firestore();
     this.state = {
       people: [],
       questions: []
@@ -48,8 +49,8 @@ class ScreenWaitingView extends Component {
   }
 
   componentDidMount() {
-    const db = firebase.firestore();
-    db.collection("retros")
+    this.db
+      .collection("retros")
       .doc("questions")
       .onSnapshot(questions => {
         this.setState(questions.data());
