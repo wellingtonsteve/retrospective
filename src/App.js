@@ -128,11 +128,25 @@ class UserView extends Component {
 class App extends Component {
   constructor(props) {
     super(props);
+    this.db = firebase.firestore();
     this.state = {
       page: "start",
-      name: null
+      name: null,
+      people: []
     };
   }
+
+  componentDidMount = () => {
+    this.db
+      .collection("retros")
+      .doc("questions")
+      .onSnapshot(questions => {
+        const people = questions.data().people;
+        this.setState({
+          people: people
+        });
+      });
+  };
 
   goToScreenView = () => {
     this.setState({
@@ -150,7 +164,7 @@ class App extends Component {
   };
 
   render() {
-    if (this.state.page === "start") {
+    if (this.state.page === "start" || this.userWasBooted()) {
       return (
         <div className="App">
           <Start
@@ -173,6 +187,10 @@ class App extends Component {
       );
     }
   }
+
+  userWasBooted = () =>
+    this.state.page === "userview" &&
+    !this.state.people.includes(this.state.name);
 }
 
 export default App;
