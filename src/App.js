@@ -48,14 +48,14 @@ class ScreenWaitingView extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.db
       .collection("retros")
       .doc("questions")
       .onSnapshot(questions => {
         this.setState(questions.data());
       });
-  }
+  };
 
   render() {
     return (
