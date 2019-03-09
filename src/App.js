@@ -57,6 +57,15 @@ class ScreenWaitingView extends Component {
       });
   };
 
+  bootUser = userName => {
+    this.db
+      .collection("retros")
+      .doc("questions")
+      .update({
+        people: firebase.firestore.FieldValue.arrayRemove(userName)
+      });
+  };
+
   render() {
     return (
       <div>
@@ -68,7 +77,14 @@ class ScreenWaitingView extends Component {
               {this.state.people.length}{" "}
               {this.state.people.length === 1 ? "person" : "people"} here:
             </h1>
-            <h2>{this.state.people.join(", ")}</h2>
+            <h2>
+              {this.state.people.map(userName => (
+                <ScreenUserTag
+                  userName={userName}
+                  bootAction={() => this.bootUser(userName)}
+                />
+              ))}
+            </h2>
           </div>
         )}
         <LocationCode />
@@ -76,6 +92,13 @@ class ScreenWaitingView extends Component {
     );
   }
 }
+
+const ScreenUserTag = ({ userName, bootAction }) => (
+  <span>
+    {userName}
+    <button onClick={bootAction}>❌</button>{" "}
+  </span>
+);
 
 class UserView extends Component {
   constructor(props) {
