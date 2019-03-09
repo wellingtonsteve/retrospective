@@ -20,7 +20,7 @@ const LocationCode = () => (
     <br />
     <QRCode size={300} value={window.location.href} />
     <br />
-    {window.location.href}
+    <h1>{window.location.href.replace(window.location.search, "")}</h1>
   </div>
 );
 
@@ -34,61 +34,6 @@ const Start = ({ screenViewAction, loginAction }) => (
         </button>
       ))}
     </div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <button onClick={screenViewAction}>
-      Secret Screen view. Don't click this. It'll just break things 🔥
-    </button>
   </div>
 );
 
@@ -168,8 +113,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.db = firebase.firestore();
+    const firstPage = window.location.search.includes("screenview")
+      ? "screenview"
+      : "start";
     this.state = {
-      page: "start",
+      page: firstPage,
       name: null,
       people: []
     };
