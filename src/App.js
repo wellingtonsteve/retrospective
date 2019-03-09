@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import firebase from "./firebase.js";
+import QRCode from "qrcode.react";
 
 const users = ["Liljana", "Cameron", "Matt", "Layne", "Steve", "Alan", "James"];
 
@@ -25,6 +26,12 @@ const Start = ({ screenViewAction, loginAction }) => (
       ))}
     </div>
     <button onClick={screenViewAction}>Screen view</button>
+    <div>
+      <br />
+      <QRCode size={300} value={window.location.href} />
+      <br />
+      {window.location.href}
+    </div>
   </div>
 );
 
