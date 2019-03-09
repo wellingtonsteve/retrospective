@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import firebase from "./firebase.js";
 import ScreenWaitingView from "./ScreenWaitingView.js";
+import UserView from "./UserView";
 
 const users = ["Liljana", "Cameron", "Matt", "Layne", "Steve", "Alan", "James"];
 
@@ -27,16 +28,6 @@ const Start = ({ screenViewAction, loginAction }) => (
     </div>
   </div>
 );
-
-class UserView extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return <div>Hi {this.props.user}</div>;
-  }
-}
 
 class App extends Component {
   constructor(props) {
