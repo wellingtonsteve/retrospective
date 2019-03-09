@@ -48,7 +48,7 @@ const Start = ({ screenViewAction, loginAction }) => (
     <br />
     <br />
     <button onClick={screenViewAction}>
-      Screen view. Don't click this. It'll just break things 🔥
+      Secret Screen view. Don't click this. It'll just break things 🔥
     </button>
   </div>
 );
