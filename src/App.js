@@ -34,7 +34,22 @@ const Start = ({ screenViewAction, loginAction }) => (
         </button>
       ))}
     </div>
-    <button onClick={screenViewAction}>Screen view</button>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <button onClick={screenViewAction}>
+      Screen view. Don't click this. It'll just break things 🔥
+    </button>
   </div>
 );
 
