@@ -15,6 +15,15 @@ const loginToApp = initials => {
     });
 };
 
+const LocationCode = () => (
+  <div>
+    <br />
+    <QRCode size={300} value={window.location.href} />
+    <br />
+    {window.location.href}
+  </div>
+);
+
 const Start = ({ screenViewAction, loginAction }) => (
   <div>
     <div className="userlist">
@@ -26,18 +35,44 @@ const Start = ({ screenViewAction, loginAction }) => (
       ))}
     </div>
     <button onClick={screenViewAction}>Screen view</button>
-    <div>
-      <br />
-      <QRCode size={300} value={window.location.href} />
-      <br />
-      {window.location.href}
-    </div>
   </div>
 );
 
-class ScreenView extends Component {
+class ScreenWaitingView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      people: [],
+      questions: []
+    };
+  }
+
+  componentDidMount() {
+    const db = firebase.firestore();
+    db.collection("retros")
+      .doc("questions")
+      .onSnapshot(questions => {
+        this.setState(questions.data());
+      });
+  }
+
   render() {
-    return <div>Hi</div>;
+    return (
+      <div>
+        {this.state.people.length === 0 ? (
+          <h1>No one here yet</h1>
+        ) : (
+          <div>
+            <h1>
+              {this.state.people.length}{" "}
+              {this.state.people.length === 1 ? "person" : "people"} here:
+            </h1>
+            <h2>{this.state.people.join(", ")}</h2>
+          </div>
+        )}
+        <LocationCode />
+      </div>
+    );
   }
 }
 
@@ -86,7 +121,7 @@ class App extends Component {
     } else if (this.state.page === "screenview") {
       return (
         <div className="App">
-          <ScreenView />
+          <ScreenWaitingView />
         </div>
       );
     } else {
