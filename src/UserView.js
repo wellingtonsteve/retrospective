@@ -22,16 +22,22 @@ class UserView extends Component {
 
   render() {
     return (
-      <div>
-        <h1>Hi {this.props.user}</h1>
-        <h2>
-          {this.state.people.length}{" "}
-          {this.state.people.length === 1 ? "person" : "people"} here
-        </h2>
-        <h2>Waiting for retro to start...</h2>
-      </div>
+      <UserWaitingScreen
+        user={this.props.user}
+        peopleCount={this.state.people.length}
+      />
     );
   }
 }
+
+const UserWaitingScreen = ({ user, peopleCount }) => (
+  <div>
+    <h1>Hi {user}</h1>
+    <h2>
+      {peopleCount} {peopleCount === 1 ? "person" : "people"} here
+    </h2>
+    <h2>Waiting for retro to start...</h2>
+  </div>
+);
 
 export default UserView;
