@@ -48,6 +48,8 @@ class ScreenWaitingView extends Component {
                   bootAction={() => this.bootUser(userName)}
                 />
               ))}
+              <br />
+              <button>Start</button>
             </h2>
           </div>
         )}
