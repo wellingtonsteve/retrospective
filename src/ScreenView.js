@@ -105,22 +105,42 @@ const voteToEmoji = score => (
 );
 
 const QuestionsView = ({
-  questionState: { currentQuestion, currentScrollDirection, questions, votes },
+  questionState: {
+    currentQuestion,
+    people,
+    currentScrollDirection,
+    questions,
+    votes
+  },
   handleSelect
 }) => {
-  const ScoreRow = ({ score }) => (
-    <tr>
-      {questions.map((question, index) => (
-        <td key={index}>
-          {votes
-            .filter(vote => vote.question === index && vote.score === score)
-            .map(vote => voteToEmoji(vote.score))}
-          {"​"}
-          {/* There's a zero width space there to make sure the row keeps its line height */}
-        </td>
-      ))}
-    </tr>
-  );
+  const ScoreRow = ({ score }) => {
+    return (
+      <tr>
+        {questions.map((question, index) => (
+          <td key={index}>
+            {people.length ===
+            votes.filter(vote => vote.question === index).length ? (
+              <span>
+                {votes
+                  .filter(
+                    vote => vote.question === index && vote.score === score
+                  )
+                  .map(vote => voteToEmoji(vote.score))}
+                {"​"}
+                {/* There's a zero width space there to make sure the row keeps its line height */}
+              </span>
+            ) : (
+              <span>
+                {"​"}
+                {/* There's a zero width space there to make sure the row keeps its line height */}
+              </span>
+            )}
+          </td>
+        ))}
+      </tr>
+    );
+  };
 
   return (
     <div>
