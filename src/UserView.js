@@ -66,20 +66,15 @@ const QuestionView = ({ questionState: { currentQuestion, questions } }) => {
         </tbody>
       </table>
       <div style={{ background: "#" + question.colour }}>
-        <div>
-          <strong>{question.heading}</strong>
-        </div>
-        <br />
-        <div>
-          <strong>{question.subheading}</strong>
-        </div>
-        <ul>
-          {question.examples.map((example, index) => (
-            <li key={index}>
-              <i>{example}</i>
-            </li>
-          ))}
-        </ul>
+        <h1>
+          Question {currentQuestion + 1}: {question.heading} -{" "}
+          {question.subheading}
+        </h1>
+        {question.examples.map((example, index) => (
+          <h3 key={index}>
+            <i>{example}</i>
+          </h3>
+        ))}
       </div>
     </div>
   );

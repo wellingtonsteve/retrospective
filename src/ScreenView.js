@@ -75,61 +75,73 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
 );
 
 const QuestionsView = ({ questionState: { currentQuestion, questions } }) => (
-  <table border="1" style={{ width: "100%" }}>
-    <tbody>
-      <tr>
-        <td>5</td>
-        {questions.map((question, index) => (
-          <td key={index}> </td>
-        ))}
-      </tr>
-      <tr>
-        <td>4</td>
-        {questions.map((question, index) => (
-          <td key={index}> </td>
-        ))}
-      </tr>
-      <tr>
-        <td>3</td>
-        {questions.map((question, index) => (
-          <td key={index}> </td>
-        ))}
-      </tr>
-      <tr>
-        <td>2</td>
-        {questions.map((question, index) => (
-          <td key={index}> </td>
-        ))}
-      </tr>
-      <tr>
-        <td>1</td>
-        {questions.map((question, index) => (
-          <td key={index}> </td>
-        ))}
-      </tr>
-      <tr>
-        <td />
-        {questions.map((question, index) => (
-          <td key={index} style={{ background: "#" + question.colour }}>
-            <div>
-              <strong>{question.heading}</strong>
-            </div>
-            <br />
-            <div>
-              <strong>{question.subheading}</strong>
-            </div>
-            <ul>
+  <div>
+    <table border="1" style={{ width: "100%" }}>
+      <tbody>
+        <tr>
+          <td>5</td>
+          {questions.map((question, index) => (
+            <td key={index}> </td>
+          ))}
+        </tr>
+        <tr>
+          <td>4</td>
+          {questions.map((question, index) => (
+            <td key={index}> </td>
+          ))}
+        </tr>
+        <tr>
+          <td>3</td>
+          {questions.map((question, index) => (
+            <td key={index}> </td>
+          ))}
+        </tr>
+        <tr>
+          <td>2</td>
+          {questions.map((question, index) => (
+            <td key={index}> </td>
+          ))}
+        </tr>
+        <tr>
+          <td>1</td>
+          {questions.map((question, index) => (
+            <td key={index}> </td>
+          ))}
+        </tr>
+        <tr>
+          <td />
+          {questions.map((question, index) => (
+            <td key={index} style={{ background: "#" + question.colour }}>
+              <div>
+                <strong>{question.heading}</strong>
+              </div>
+              <br />
+              <div>
+                <strong>{question.subheading}</strong>
+              </div>
               {question.examples.map((example, index) => (
-                <li key={index}>
-                  <i>{example}</i>
-                </li>
+                <i key={index}>
+                  <br />
+                  {example}
+                </i>
               ))}
-            </ul>
-          </td>
-        ))}
-      </tr>
-    </tbody>
-  </table>
+            </td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+    <div style={{ background: "#" + questions[currentQuestion].colour }}>
+      <h1>
+        Question {currentQuestion + 1}: {questions[currentQuestion].heading} -{" "}
+        {questions[currentQuestion].subheading}
+      </h1>
+      {questions[currentQuestion].examples.map((example, index) => (
+        <h3 key={index}>
+          <i>{example}</i>
+        </h3>
+      ))}
+    </div>
+  </div>
 );
 
 const ScreenUserTag = ({ userName, bootAction }) => (
