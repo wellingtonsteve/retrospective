@@ -33,13 +33,22 @@ class ScreenView extends Component {
 
   render = () =>
     this.state.currentQuestion === -1 ? (
-      <ScreenWaitingView people={this.state.people} bootUser={this.bootUser} />
+      <ScreenWaitingView
+        people={this.state.people}
+        bootUser={this.bootUser}
+        startAction={() =>
+          this.db
+            .collection("retros")
+            .doc("questions")
+            .update({ currentQuestion: 0 })
+        }
+      />
     ) : (
       <QuestionsView questionState={this.state} />
     );
 }
 
-const ScreenWaitingView = ({ people, bootUser }) => (
+const ScreenWaitingView = ({ people, bootUser, startAction }) => (
   <div>
     {people.length === 0 ? (
       <h1>No one here yet</h1>
@@ -56,7 +65,7 @@ const ScreenWaitingView = ({ people, bootUser }) => (
             />
           ))}
           <br />
-          <button>Start</button>
+          <button onClick={startAction}>Start</button>
         </h2>
       </div>
     )}
