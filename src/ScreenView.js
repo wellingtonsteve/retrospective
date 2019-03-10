@@ -62,15 +62,17 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
         <h1>
           {people.length} {people.length === 1 ? "person" : "people"} here:
         </h1>
-        {people.map(userName => (
-          <ScreenUserTag
-            userName={userName}
-            bootAction={() => bootUser(userName)}
-          />
-        ))}
-        <br />
+        <p>
+          {people.map(userName => (
+            <ScreenUserTag
+              userName={userName}
+              bootAction={() => bootUser(userName)}
+            />
+          ))}
+        </p>
         <Button size="lg" style={{ marginTop: "5px" }} onClick={startAction}>
-          Start
+          Start{"  "}
+          <FontAwesome name="play" />
         </Button>
       </Jumbotron>
     )}
