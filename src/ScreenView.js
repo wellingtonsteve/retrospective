@@ -1,6 +1,9 @@
 import firebase from "./firebase";
 import LocationCode from "./LocationCode.js";
 import React, { Component } from "react";
+import Button from "react-bootstrap/Button";
+import FontAwesome from "react-fontawesome";
+import Jumbotron from "react-bootstrap/Jumbotron";
 
 class ScreenView extends Component {
   constructor(props) {
@@ -51,25 +54,26 @@ class ScreenView extends Component {
 const ScreenWaitingView = ({ people, bootUser, startAction }) => (
   <div>
     {people.length === 0 ? (
-      <h1>No one here yet</h1>
+      <Jumbotron>
+        <h1>No one here yet</h1>
+      </Jumbotron>
     ) : (
-      <div>
+      <Jumbotron>
         <h1>
           {people.length} {people.length === 1 ? "person" : "people"} here:
         </h1>
-        <h2>
-          {people.map(userName => (
-            <ScreenUserTag
-              userName={userName}
-              bootAction={() => bootUser(userName)}
-            />
-          ))}
-          <br />
-          <button onClick={startAction}>Start</button>
-        </h2>
-      </div>
+        {people.map(userName => (
+          <ScreenUserTag
+            userName={userName}
+            bootAction={() => bootUser(userName)}
+          />
+        ))}
+        <br />
+        <Button size="lg" style={{ marginTop: "5px" }} onClick={startAction}>
+          Start
+        </Button>
+      </Jumbotron>
     )}
-    <br />
     <LocationCode />
   </div>
 );
@@ -145,9 +149,11 @@ const QuestionsView = ({ questionState: { currentQuestion, questions } }) => (
 );
 
 const ScreenUserTag = ({ userName, bootAction }) => (
-  <span>
-    {userName}
-    <button onClick={bootAction}>❌</button>{" "}
+  <span style={{ margin: "3px", fontSize: "150%" }}>
+    {userName}{" "}
+    <Button size="sm" variant="danger" onClick={bootAction}>
+      <FontAwesome name="user-minus" />
+    </Button>{" "}
   </span>
 );
 

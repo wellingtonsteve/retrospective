@@ -3,8 +3,17 @@ import "./App.css";
 import firebase from "./firebase.js";
 import ScreenView from "./ScreenView.js";
 import UserView from "./UserView";
+import Button from "react-bootstrap/Button";
 
-const users = ["Liljana", "Cameron", "Matt", "Layne", "Steve", "Alan", "James"];
+const users = [
+  "Liljana",
+  "Cameron",
+  "Matt",
+  "Layne",
+  "Steve",
+  "Alan",
+  "James"
+].sort();
 
 const loginToApp = initials => {
   const db = firebase.firestore();
@@ -21,9 +30,9 @@ const Start = ({ screenViewAction, loginAction }) => (
     <div className="userlist">
       <h1>Choose your name</h1>
       {users.map(user => (
-        <button key={user} onClick={() => loginAction(user)}>
+        <Button size="lg" key={user} onClick={() => loginAction(user)}>
           {user}
-        </button>
+        </Button>
       ))}
     </div>
   </div>
