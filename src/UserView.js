@@ -89,6 +89,22 @@ class QuestionView extends Component {
       vote => vote.user === user && vote.question === currentQuestion
     );
 
+    const VoteButton = ({ buttonScore }) => (
+      <button
+        disabled={myVotes.length > 0}
+        onClick={() => voteAction(buttonScore)}
+        className="voteButton"
+        style={{
+          border:
+            myVotes.length > 0 && myVotes[0].score === buttonScore
+              ? "2px solid red"
+              : "1px solid black"
+        }}
+      >
+        {buttonScore}
+      </button>
+    );
+
     return (
       <div>
         <div style={{ background: "#" + question.colour }}>
@@ -103,71 +119,11 @@ class QuestionView extends Component {
           ))}
         </div>
         <div>
-          <button
-            disabled={myVotes.length > 0}
-            onClick={() => voteAction(1)}
-            className="voteButton"
-            style={{
-              border:
-                myVotes.length > 0 && myVotes[0].score === 1
-                  ? "2px solid red"
-                  : "1px solid black"
-            }}
-          >
-            1
-          </button>
-          <button
-            disabled={myVotes.length > 0}
-            onClick={() => voteAction(2)}
-            className="voteButton"
-            style={{
-              border:
-                myVotes.length > 0 && myVotes[0].score === 2
-                  ? "2px solid red"
-                  : "1px solid black"
-            }}
-          >
-            2
-          </button>
-          <button
-            disabled={myVotes.length > 0}
-            onClick={() => voteAction(3)}
-            className="voteButton"
-            style={{
-              border:
-                myVotes.length > 0 && myVotes[0].score === 3
-                  ? "2px solid red"
-                  : "1px solid black"
-            }}
-          >
-            3
-          </button>
-          <button
-            disabled={myVotes.length > 0}
-            onClick={() => voteAction(4)}
-            className="voteButton"
-            style={{
-              border:
-                myVotes.length > 0 && myVotes[0].score === 4
-                  ? "2px solid red"
-                  : "1px solid black"
-            }}
-          >
-            4
-          </button>
-          <button
-            disabled={myVotes.length > 0}
-            onClick={() => voteAction(5)}
-            className="voteButton"
-            style={{
-              border:
-                myVotes.length > 0 && myVotes[0].score === 5
-                  ? "2px solid red"
-                  : "1px solid black"
-            }}
-          >
-            5
-          </button>
+          <VoteButton buttonScore={1} />
+          <VoteButton buttonScore={2} />
+          <VoteButton buttonScore={3} />
+          <VoteButton buttonScore={4} />
+          <VoteButton buttonScore={5} />
         </div>
       </div>
     );
