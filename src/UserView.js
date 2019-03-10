@@ -12,7 +12,8 @@ class UserView extends Component {
     this.state = {
       currentQuestion: -1,
       people: [],
-      questions: []
+      questions: [],
+      votes: []
     };
   }
 
@@ -50,26 +51,16 @@ class QuestionView extends Component {
   constructor(props) {
     super(props);
     this.db = firebase.firestore();
-    this.state = {
-      votes: []
-    };
   }
-
-  componentDidMount = () => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .onSnapshot(questions => {
-        this.setState({
-          votes:
-            questions.data().votes === undefined ? [] : questions.data().votes
-        });
-      });
-  };
 
   render = () => {
     const {
-      questionState: { currentQuestion, currentScrollDirection, questions },
+      questionState: {
+        currentQuestion,
+        currentScrollDirection,
+        questions,
+        votes
+      },
       user
     } = this.props;
 
@@ -96,7 +87,7 @@ class QuestionView extends Component {
         indicators={false}
       >
         {questions.map((question, index) => {
-          const myVotes = this.state.votes.filter(
+          const myVotes = votes.filter(
             vote => vote.user === user && vote.question === index
           );
 
