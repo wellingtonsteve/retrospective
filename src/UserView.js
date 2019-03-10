@@ -119,11 +119,11 @@ class QuestionView extends Component {
                 </p>
               </Jumbotron>
               <div>
-                <VoteButton buttonScore={1} />
-                <VoteButton buttonScore={2} />
-                <VoteButton buttonScore={3} />
-                <VoteButton buttonScore={4} />
                 <VoteButton buttonScore={5} />
+                <VoteButton buttonScore={4} />
+                <VoteButton buttonScore={3} />
+                <VoteButton buttonScore={2} />
+                <VoteButton buttonScore={1} />
               </div>
             </Carousel.Item>
           );
