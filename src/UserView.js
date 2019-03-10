@@ -46,25 +46,6 @@ const QuestionView = ({ questionState: { currentQuestion, questions } }) => {
   const question = questions[currentQuestion];
   return (
     <div>
-      <table border="0" style={{ width: "100%" }}>
-        <tbody>
-          <tr>
-            {questions.map((question, index) => (
-              <td
-                key={index}
-                style={{
-                  background: "#" + question.colour,
-                  fontSize: index === currentQuestion ? "120%" : "100%",
-                  fontWeight: index === currentQuestion ? "bold" : "100",
-                  color: currentQuestion >= index ? "black" : "gray"
-                }}
-              >
-                {index + 1}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
       <div style={{ background: "#" + question.colour }}>
         <h1>
           Question {currentQuestion + 1}: {question.heading} -{" "}
