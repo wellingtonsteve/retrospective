@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import firebase from "./firebase";
+import Jumbotron from "react-bootstrap/Jumbotron";
 
 class UserView extends Component {
   constructor(props) {
@@ -33,13 +34,13 @@ class UserView extends Component {
 }
 
 const UserWaitingScreen = ({ user, peopleCount }) => (
-  <div>
+  <Jumbotron>
     <h1>Hi {user}</h1>
-    <h2>
+    <p>
       {peopleCount} {peopleCount === 1 ? "person" : "people"} here
-    </h2>
-    <h2>Waiting for retro to start...</h2>
-  </div>
+    </p>
+    <p>Waiting for retro to start...</p>
+  </Jumbotron>
 );
 
 class QuestionView extends Component {
