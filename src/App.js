@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import firebase from "./firebase.js";
-import ScreenWaitingView from "./ScreenWaitingView.js";
+import ScreenView from "./ScreenView.js";
 import UserView from "./UserView";
 
 const users = ["Liljana", "Cameron", "Matt", "Layne", "Steve", "Alan", "James"];
@@ -83,7 +83,7 @@ class App extends Component {
     } else if (this.state.page === "screenview") {
       return (
         <div className="App">
-          <ScreenWaitingView />
+          <ScreenView />
         </div>
       );
     } else {

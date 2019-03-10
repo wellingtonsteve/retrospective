@@ -2,7 +2,7 @@ import firebase from "./firebase";
 import LocationCode from "./LocationCode.js";
 import React, { Component } from "react";
 
-class ScreenWaitingView extends Component {
+class ScreenView extends Component {
   constructor(props) {
     super(props);
     this.db = firebase.firestore();
@@ -30,35 +30,36 @@ class ScreenWaitingView extends Component {
       });
   };
 
-  render() {
-    return (
-      <div>
-        {this.state.people.length === 0 ? (
-          <h1>No one here yet</h1>
-        ) : (
-          <div>
-            <h1>
-              {this.state.people.length}{" "}
-              {this.state.people.length === 1 ? "person" : "people"} here:
-            </h1>
-            <h2>
-              {this.state.people.map(userName => (
-                <ScreenUserTag
-                  userName={userName}
-                  bootAction={() => this.bootUser(userName)}
-                />
-              ))}
-              <br />
-              <button>Start</button>
-            </h2>
-          </div>
-        )}
-        <br />
-        <LocationCode />
-      </div>
-    );
-  }
+  render = () => (
+    <ScreenWaitingView people={this.state.people} bootUser={this.bootUser} />
+  );
 }
+
+const ScreenWaitingView = ({ people, bootUser }) => (
+  <div>
+    {people.length === 0 ? (
+      <h1>No one here yet</h1>
+    ) : (
+      <div>
+        <h1>
+          {people.length} {people.length === 1 ? "person" : "people"} here:
+        </h1>
+        <h2>
+          {people.map(userName => (
+            <ScreenUserTag
+              userName={userName}
+              bootAction={() => bootUser(userName)}
+            />
+          ))}
+          <br />
+          <button>Start</button>
+        </h2>
+      </div>
+    )}
+    <br />
+    <LocationCode />
+  </div>
+);
 
 const ScreenUserTag = ({ userName, bootAction }) => (
   <span>
@@ -67,4 +68,4 @@ const ScreenUserTag = ({ userName, bootAction }) => (
   </span>
 );
 
-export default ScreenWaitingView;
+export default ScreenView;
