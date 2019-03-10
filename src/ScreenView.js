@@ -7,6 +7,7 @@ class ScreenView extends Component {
     super(props);
     this.db = firebase.firestore();
     this.state = {
+      currentQuestion: -1,
       people: [],
       questions: []
     };
@@ -30,9 +31,12 @@ class ScreenView extends Component {
       });
   };
 
-  render = () => (
-    <ScreenWaitingView people={this.state.people} bootUser={this.bootUser} />
-  );
+  render = () =>
+    this.state.currentQuestion === -1 ? (
+      <ScreenWaitingView people={this.state.people} bootUser={this.bootUser} />
+    ) : (
+      <QuestionsView questionState={this.state} />
+    );
 }
 
 const ScreenWaitingView = ({ people, bootUser }) => (
@@ -60,6 +64,8 @@ const ScreenWaitingView = ({ people, bootUser }) => (
     <LocationCode />
   </div>
 );
+
+const QuestionsView = ({ questionState }) => <div>Ok started</div>;
 
 const ScreenUserTag = ({ userName, bootAction }) => (
   <span>
