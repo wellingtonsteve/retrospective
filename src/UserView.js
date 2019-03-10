@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import firebase from "./firebase";
 import Jumbotron from "react-bootstrap/Jumbotron";
+import Button from "react-bootstrap/Button";
+import FontAwesome from "react-fontawesome";
 
 class UserView extends Component {
   constructor(props) {
@@ -91,34 +93,33 @@ class QuestionView extends Component {
     );
 
     const VoteButton = ({ buttonScore }) => (
-      <button
+      <Button
+        size="lg"
+        block
         disabled={myVotes.length > 0}
         onClick={() => voteAction(buttonScore)}
-        className="voteButton"
-        style={{
-          border:
-            myVotes.length > 0 && myVotes[0].score === buttonScore
-              ? "2px solid red"
-              : "1px solid black"
-        }}
       >
         {buttonScore}
-      </button>
+        {myVotes.length > 0 && myVotes[0].score === buttonScore ? (
+          <FontAwesome name="check" />
+        ) : null}
+      </Button>
     );
 
     return (
       <div>
-        <div style={{ background: "#" + question.colour }}>
-          <h1>
-            Question {currentQuestion + 1}: {question.heading} -{" "}
-            {question.subheading}
-          </h1>
-          {question.examples.map((example, index) => (
-            <h3 key={index}>
-              <i>{example}</i>
-            </h3>
-          ))}
-        </div>
+        <Jumbotron style={{ background: "#" + question.colour }}>
+          <h1>{question.heading}</h1>
+          <h2>{question.subheading}</h2>
+          <p>
+            {question.examples.map((example, index) => (
+              <span key={index}>
+                <i>{example}</i>
+                <br />
+              </span>
+            ))}
+          </p>
+        </Jumbotron>
         <div>
           <VoteButton buttonScore={1} />
           <VoteButton buttonScore={2} />
