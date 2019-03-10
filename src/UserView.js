@@ -22,7 +22,7 @@ class UserView extends Component {
       .collection("retros")
       .doc("questions")
       .onSnapshot(questions => {
-        this.setState(questions.data());
+        this.setState({ votes: [], ...questions.data() });
       });
   };
 
