@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import Button from "react-bootstrap/Button";
 import FontAwesome from "react-fontawesome";
 import Jumbotron from "react-bootstrap/Jumbotron";
+import Carousel from "react-bootstrap/Carousel";
 
 class ScreenView extends Component {
   constructor(props) {
@@ -34,6 +35,17 @@ class ScreenView extends Component {
       });
   };
 
+  handleSelect = (selectedIndex, e) => {
+    console.log(e);
+    this.db
+      .collection("retros")
+      .doc("questions")
+      .update({
+        currentQuestion: selectedIndex,
+        currentScrollDirection: e
+      });
+  };
+
   render = () =>
     this.state.currentQuestion === -1 ? (
       <ScreenWaitingView
@@ -47,7 +59,10 @@ class ScreenView extends Component {
         }
       />
     ) : (
-      <QuestionsView questionState={this.state} />
+      <QuestionsView
+        questionState={this.state}
+        handleSelect={this.handleSelect}
+      />
     );
 }
 
@@ -65,6 +80,7 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
         <p>
           {people.map(userName => (
             <ScreenUserTag
+              key={userName}
               userName={userName}
               bootAction={() => bootUser(userName)}
             />
@@ -80,7 +96,10 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
   </div>
 );
 
-const QuestionsView = ({ questionState: { currentQuestion, questions } }) => (
+const QuestionsView = ({
+  questionState: { currentQuestion, currentScrollDirection, questions },
+  handleSelect
+}) => (
   <div>
     <table border="1" style={{ width: "100%" }}>
       <tbody>
@@ -136,17 +155,35 @@ const QuestionsView = ({ questionState: { currentQuestion, questions } }) => (
         </tr>
       </tbody>
     </table>
-    <div style={{ background: "#" + questions[currentQuestion].colour }}>
-      <h1>
-        Question {currentQuestion + 1}: {questions[currentQuestion].heading} -{" "}
-        {questions[currentQuestion].subheading}
-      </h1>
-      {questions[currentQuestion].examples.map((example, index) => (
-        <h3 key={index}>
-          <i>{example}</i>
-        </h3>
+    <Carousel
+      activeIndex={currentQuestion}
+      direction={currentScrollDirection}
+      onSelect={handleSelect}
+      interval={null}
+      controls={false}
+      indicators={true}
+    >
+      {questions.map((question, index) => (
+        <Carousel.Item key={index}>
+          <Jumbotron
+            style={{ background: "#" + question.colour, marginBottom: "50px" }}
+          >
+            <div style={{ width: "70%", margin: "auto" }}>
+              <h1>{question.heading}</h1>
+              <h2>{question.subheading}</h2>
+              <p>
+                {question.examples.map((example, index) => (
+                  <span key={index}>
+                    <i>{example}</i>
+                    <br />
+                  </span>
+                ))}
+              </p>
+            </div>
+          </Jumbotron>
+        </Carousel.Item>
       ))}
-    </div>
+    </Carousel>
   </div>
 );
 

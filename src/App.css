@@ -26,3 +26,7 @@ button.voteButton {
   padding: 10px;
   font-size: 80pt
 }
+
+.carousel-indicators li {
+  background-color: black !important;
+}
