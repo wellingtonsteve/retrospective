@@ -30,3 +30,16 @@ button.voteButton {
 .carousel-indicators li {
   background-color: black !important;
 }
+
+@keyframes fa-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating {
+  animation: fa-spin infinite 2s linear;
+}

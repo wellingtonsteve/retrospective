@@ -130,6 +130,8 @@ const QuestionsView = ({
                 {"​"}
                 {/* There's a zero width space there to make sure the row keeps its line height */}
               </span>
+            ) : currentQuestion === index ? (
+              <FontAwesome className="rotating" name="spinner" />
             ) : (
               <span>
                 {"​"}
