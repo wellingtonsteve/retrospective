@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import FontAwesome from "react-fontawesome";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Carousel from "react-bootstrap/Carousel";
+import Badge from "react-bootstrap/Badge";
 
 class ScreenView extends Component {
   constructor(props) {
@@ -13,7 +14,8 @@ class ScreenView extends Component {
     this.state = {
       currentQuestion: -1,
       people: [],
-      questions: []
+      questions: [],
+      votes: []
     };
   }
 
@@ -22,7 +24,7 @@ class ScreenView extends Component {
       .collection("retros")
       .doc("questions")
       .onSnapshot(questions => {
-        this.setState(questions.data());
+        this.setState({ votes: [], ...questions.data() });
       });
   };
 
@@ -96,96 +98,95 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
   </div>
 );
 
-const QuestionsView = ({
-  questionState: { currentQuestion, currentScrollDirection, questions },
-  handleSelect
-}) => (
-  <div>
-    <table border="1" style={{ width: "100%" }}>
-      <tbody>
-        <tr>
-          <td>5</td>
-          {questions.map((question, index) => (
-            <td key={index}> </td>
-          ))}
-        </tr>
-        <tr>
-          <td>4</td>
-          {questions.map((question, index) => (
-            <td key={index}> </td>
-          ))}
-        </tr>
-        <tr>
-          <td>3</td>
-          {questions.map((question, index) => (
-            <td key={index}> </td>
-          ))}
-        </tr>
-        <tr>
-          <td>2</td>
-          {questions.map((question, index) => (
-            <td key={index}> </td>
-          ))}
-        </tr>
-        <tr>
-          <td>1</td>
-          {questions.map((question, index) => (
-            <td key={index}> </td>
-          ))}
-        </tr>
-        <tr>
-          <td />
-          {questions.map((question, index) => (
-            <td key={index} style={{ background: "#" + question.colour }}>
-              <div>
-                <strong>{question.heading}</strong>
-              </div>
-              <br />
-              <div>
-                <strong>{question.subheading}</strong>
-              </div>
-              {question.examples.map((example, index) => (
-                <i key={index}>
-                  <br />
-                  {example}
-                </i>
-              ))}
-            </td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
-    <Carousel
-      activeIndex={currentQuestion}
-      direction={currentScrollDirection}
-      onSelect={handleSelect}
-      interval={null}
-      controls={false}
-      indicators={true}
-    >
-      {questions.map((question, index) => (
-        <Carousel.Item key={index}>
-          <Jumbotron
-            style={{ background: "#" + question.colour, marginBottom: "50px" }}
-          >
-            <div style={{ width: "70%", margin: "auto" }}>
-              <h1>{question.heading}</h1>
-              <h2>{question.subheading}</h2>
-              <p>
-                {question.examples.map((example, index) => (
-                  <span key={index}>
-                    <i>{example}</i>
-                    <br />
-                  </span>
-                ))}
-              </p>
-            </div>
-          </Jumbotron>
-        </Carousel.Item>
-      ))}
-    </Carousel>
-  </div>
+const voteToEmoji = score => (
+  <span>
+    <Badge variant="success">{score}</Badge>{" "}
+  </span>
 );
+
+const QuestionsView = ({
+  questionState: { currentQuestion, currentScrollDirection, questions, votes },
+  handleSelect
+}) => {
+  const ScoreRow = ({ score }) => (
+    <tr>
+      {questions.map((question, index) => (
+        <td key={index}>
+          {votes
+            .filter(vote => vote.question === index && vote.score === score)
+            .map(vote => voteToEmoji(vote.score))}
+          {"​"}
+          {/* There's a zero width space there to make sure the row keeps its line height */}
+        </td>
+      ))}
+    </tr>
+  );
+
+  return (
+    <div>
+      <table border="1" style={{ width: "100%" }}>
+        <tbody>
+          <ScoreRow score={5} />
+          <ScoreRow score={4} />
+          <ScoreRow score={3} />
+          <ScoreRow score={2} />
+          <ScoreRow score={1} />
+          <tr>
+            {questions.map((question, index) => (
+              <td key={index} style={{ background: "#" + question.colour }}>
+                <div>
+                  <strong>{question.heading}</strong>
+                </div>
+                <br />
+                <div>
+                  <strong>{question.subheading}</strong>
+                </div>
+                {question.examples.map((example, index) => (
+                  <i key={index}>
+                    <br />
+                    {example}
+                  </i>
+                ))}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+      <Carousel
+        activeIndex={currentQuestion}
+        direction={currentScrollDirection}
+        onSelect={handleSelect}
+        interval={null}
+        controls={false}
+        indicators={true}
+      >
+        {questions.map((question, index) => (
+          <Carousel.Item key={index}>
+            <Jumbotron
+              style={{
+                background: "#" + question.colour,
+                marginBottom: "50px"
+              }}
+            >
+              <div style={{ width: "70%", margin: "auto" }}>
+                <h1>{question.heading}</h1>
+                <h2>{question.subheading}</h2>
+                <p>
+                  {question.examples.map((example, index) => (
+                    <span key={index}>
+                      <i>{example}</i>
+                      <br />
+                    </span>
+                  ))}
+                </p>
+              </div>
+            </Jumbotron>
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    </div>
+  );
+};
 
 const ScreenUserTag = ({ userName, bootAction }) => (
   <span style={{ margin: "3px", fontSize: "150%" }}>
