@@ -104,6 +104,16 @@ const voteToEmoji = score => (
   </span>
 );
 
+function everyoneVoted(people, votes, index) {
+  const votedUsers = votes
+    .filter(vote => vote.question === index)
+    .map(vote => vote.user);
+  return (
+    people.filter(person => votedUsers.includes(person)).length ===
+    people.length
+  );
+}
+
 const QuestionsView = ({
   questionState: {
     currentQuestion,
@@ -119,8 +129,7 @@ const QuestionsView = ({
       <tr>
         {questions.map((question, index) => (
           <td key={index}>
-            {people.length ===
-            votes.filter(vote => vote.question === index).length ? (
+            {everyoneVoted(people, votes, index) ? (
               <span>
                 {votes
                   .filter(
