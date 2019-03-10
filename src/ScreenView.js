@@ -124,34 +124,44 @@ const QuestionsView = ({
 
   return (
     <div>
-      <table border="1" style={{ width: "100%" }}>
-        <tbody>
-          <ScoreRow score={5} />
-          <ScoreRow score={4} />
-          <ScoreRow score={3} />
-          <ScoreRow score={2} />
-          <ScoreRow score={1} />
-          <tr>
-            {questions.map((question, index) => (
-              <td key={index} style={{ background: "#" + question.colour }}>
-                <div>
-                  <strong>{question.heading}</strong>
-                </div>
-                <br />
-                <div>
-                  <strong>{question.subheading}</strong>
-                </div>
-                {question.examples.map((example, index) => (
-                  <i key={index}>
-                    <br />
-                    {example}
-                  </i>
-                ))}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
+      <Jumbotron style={{ padding: "20px", marginBottom: "20px" }}>
+        <table border="1" style={{ width: "100%", background: "white" }}>
+          <tbody>
+            <ScoreRow score={5} />
+            <ScoreRow score={4} />
+            <ScoreRow score={3} />
+            <ScoreRow score={2} />
+            <ScoreRow score={1} />
+            <tr>
+              {questions.map((question, index) => (
+                <td
+                  key={index}
+                  style={{
+                    verticalAlign: "top",
+                    padding: "5px",
+                    background: "#" + question.colour
+                  }}
+                >
+                  <div style={{ height: "60px", fontSize: "110%" }}>
+                    <strong>{question.heading}</strong>
+                  </div>
+                  <div style={{ height: "60px" }}>
+                    <strong>{question.subheading}</strong>
+                  </div>
+                  <p>
+                    {question.examples.map((example, index) => (
+                      <i key={index}>
+                        <br />
+                        {example}
+                      </i>
+                    ))}
+                  </p>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </Jumbotron>
       <Carousel
         activeIndex={currentQuestion}
         direction={currentScrollDirection}
@@ -165,6 +175,7 @@ const QuestionsView = ({
             <Jumbotron
               style={{
                 background: "#" + question.colour,
+                padding: "20px",
                 marginBottom: "50px"
               }}
             >
