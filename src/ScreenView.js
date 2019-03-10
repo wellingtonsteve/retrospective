@@ -114,6 +114,13 @@ function everyoneVoted(people, votes, index) {
   );
 }
 
+function peopleWhoHaveNotVoted(people, votes, index) {
+  const votedUsers = votes
+    .filter(vote => vote.question === index)
+    .map(vote => vote.user);
+  return people.filter(person => !votedUsers.includes(person));
+}
+
 const QuestionsView = ({
   questionState: {
     currentQuestion,
@@ -221,6 +228,20 @@ const QuestionsView = ({
                     </span>
                   ))}
                 </p>
+                {peopleWhoHaveNotVoted(people, votes, index).length === 0 ? (
+                  questions.length > index + 1 ? (
+                    <Button onClick={() => handleSelect(index + 1, null)}>
+                      Next
+                    </Button>
+                  ) : null
+                ) : (
+                  <p>
+                    Waiting for votes from:{" "}
+                    <b>
+                      {peopleWhoHaveNotVoted(people, votes, index).join(", ")}
+                    </b>
+                  </p>
+                )}
               </div>
             </Jumbotron>
           </Carousel.Item>
