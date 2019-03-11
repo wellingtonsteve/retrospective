@@ -5,6 +5,8 @@ import Button from "react-bootstrap/Button";
 import FontAwesome from "react-fontawesome";
 import Carousel from "react-bootstrap/Carousel";
 
+const variantMap = ["danger", "danger", "warning", "success", "success"];
+
 class UserView extends Component {
   constructor(props) {
     super(props);
@@ -93,6 +95,7 @@ class QuestionView extends Component {
 
           const VoteButton = ({ buttonScore }) => (
             <Button
+              variant={variantMap[buttonScore - 1]}
               size="lg"
               block
               disabled={myVotes.length > 0}

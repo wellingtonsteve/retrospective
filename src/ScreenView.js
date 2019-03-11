@@ -7,6 +7,8 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Carousel from "react-bootstrap/Carousel";
 import Badge from "react-bootstrap/Badge";
 
+const variantMap = ["danger", "danger", "warning", "success", "success"];
+
 class ScreenView extends Component {
   constructor(props) {
     super(props);
@@ -100,7 +102,13 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
 
 const voteToEmoji = score => (
   <span>
-    <Badge variant="success">{score}</Badge>{" "}
+    <Badge
+      pill
+      style={{ fontSize: "150%", margin: "1px" }}
+      variant={variantMap[score - 1]}
+    >
+      {score}
+    </Badge>
   </span>
 );
 
@@ -133,9 +141,15 @@ const QuestionsView = ({
 }) => {
   const ScoreRow = ({ score }) => {
     return (
-      <tr>
+      <tr style={{ height: "40px" }}>
         {questions.map((question, index) => (
-          <td key={index}>
+          <td
+            key={index}
+            style={{
+              background: "white",
+              borderWidth: "2px"
+            }}
+          >
             {everyoneVoted(people, votes, index) ? (
               <span>
                 {votes
@@ -143,14 +157,18 @@ const QuestionsView = ({
                     vote => vote.question === index && vote.score === score
                   )
                   .map(vote => voteToEmoji(vote.score))}
-                {"​"}
+                <span>​</span>
                 {/* There's a zero width space there to make sure the row keeps its line height */}
               </span>
             ) : currentQuestion === index ? (
-              <FontAwesome className="rotating" name="spinner" />
+              <FontAwesome
+                style={{ fontSize: "150%" }}
+                className="rotating"
+                name="spinner"
+              />
             ) : (
               <span>
-                {"​"}
+                <span>​</span>
                 {/* There's a zero width space there to make sure the row keeps its line height */}
               </span>
             )}
@@ -162,8 +180,22 @@ const QuestionsView = ({
 
   return (
     <div>
-      <Jumbotron style={{ padding: "20px", marginBottom: "20px" }}>
-        <table border="1" style={{ width: "100%", background: "white" }}>
+      <Jumbotron
+        style={{
+          padding: "10px",
+          marginBottom: "10px",
+          background: "darkgray"
+        }}
+      >
+        <table
+          // border="1"
+          style={{
+            borderWidth: "2px",
+            width: "100%",
+            tableLayout: "fixed",
+            borderCollapse: "separate"
+          }}
+        >
           <tbody>
             <ScoreRow score={5} />
             <ScoreRow score={4} />
@@ -175,25 +207,17 @@ const QuestionsView = ({
                 <td
                   key={index}
                   style={{
-                    verticalAlign: "top",
+                    borderWidth: "2px",
+                    // borderColor: "rgb(233, 236, 239)",
+                    verticalAlign: "center",
                     padding: "5px",
-                    background: "#" + question.colour
+                    background: "#" + question.colour,
+                    fontSize: "110%",
+                    fontWeight: "bold",
+                    textAlign: "center"
                   }}
                 >
-                  <div style={{ height: "60px", fontSize: "110%" }}>
-                    <strong>{question.heading}</strong>
-                  </div>
-                  <div style={{ height: "60px" }}>
-                    <strong>{question.subheading}</strong>
-                  </div>
-                  <p>
-                    {question.examples.map((example, index) => (
-                      <i key={index}>
-                        <br />
-                        {example}
-                      </i>
-                    ))}
-                  </p>
+                  {question.heading}
                 </td>
               ))}
             </tr>
@@ -220,7 +244,7 @@ const QuestionsView = ({
               <div style={{ width: "70%", margin: "auto" }}>
                 <h1>{question.heading}</h1>
                 <h2>{question.subheading}</h2>
-                <p>
+                <p style={{ fontSize: "110%" }}>
                   {question.examples.map((example, index) => (
                     <span key={index}>
                       <i>{example}</i>
