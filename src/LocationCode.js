@@ -7,19 +7,11 @@ const LocationCode = () => {
   return (
     <Card style={{ textAlign: "center" }}>
       <Card.Body>
-        <QRCode
-          size={300}
-          value={
-            url === "https://retro.stevewellington.dev/"
-              ? "https://goo.gl/DDEEoe"
-              : url
-          }
-          level={"H"}
-        />
+        <QRCode size={300} value={url} level={"H"} />
         <br />
         <h1>{url}</h1>
         {url === "https://retro.stevewellington.dev/" ? (
-          <h1>https://goo.gl/DDEEoe</h1>
+          <h1>https://tinyurl.com/retro2019</h1>
         ) : null}
       </Card.Body>
     </Card>
