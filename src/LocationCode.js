@@ -10,8 +10,8 @@ const LocationCode = () => {
         <QRCode size={300} value={url} level={"H"} />
         <br />
         <h1>{url}</h1>
-        {url === "https://wellingtonsteve.github.io/retrospectiveexport/" ? (
-          <h1>https://goo.gl/zonjbi</h1>
+        {url === "https://retro.stevewellington.dev/" ? (
+          <h1>https://goo.gl/DDEEoe</h1>
         ) : null}
       </Card.Body>
     </Card>
