@@ -1,7 +1,6 @@
 import firebase from "./firebase";
 import LocationCode from "./LocationCode.js";
 import React, { Component } from "react";
-import Button from "react-bootstrap/Button";
 import FontAwesome from "react-fontawesome";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Carousel from "react-bootstrap/Carousel";
@@ -39,14 +38,13 @@ class ScreenView extends Component {
       });
   };
 
-  handleSelect = (selectedIndex, e) => {
-    console.log(e);
+  handleSelect = (selectedIndex, scrollDirection) => {
     this.db
       .collection("retros")
       .doc("questions")
       .update({
         currentQuestion: selectedIndex,
-        currentScrollDirection: e
+        currentScrollDirection: scrollDirection
       });
   };
 
@@ -90,10 +88,6 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
             />
           ))}
         </p>
-        <Button size="lg" style={{ marginTop: "5px" }} onClick={startAction}>
-          Start{"  "}
-          <FontAwesome name="play" />
-        </Button>
       </Jumbotron>
     )}
     <LocationCode />
@@ -213,7 +207,7 @@ const QuestionsView = ({
                     padding: "5px",
                     background: "#" + question.colour,
                     fontSize: "110%",
-                    fontWeight: "bold",
+                    fontWeight: currentQuestion === index ? "bold" : "normal",
                     textAlign: "center"
                   }}
                 >
@@ -252,13 +246,8 @@ const QuestionsView = ({
                     </span>
                   ))}
                 </p>
-                {peopleWhoHaveNotVoted(people, votes, index).length === 0 ? (
-                  questions.length > index + 1 ? (
-                    <Button onClick={() => handleSelect(index + 1, null)}>
-                      Next
-                    </Button>
-                  ) : null
-                ) : (
+                {peopleWhoHaveNotVoted(people, votes, index).length ===
+                0 ? null : (
                   <p>
                     Waiting for votes from:{" "}
                     <b>
@@ -276,12 +265,13 @@ const QuestionsView = ({
 };
 
 const ScreenUserTag = ({ userName, bootAction }) => (
-  <span style={{ margin: "3px", fontSize: "150%" }}>
-    {userName}{" "}
-    <Button size="sm" variant="danger" onClick={bootAction}>
-      <FontAwesome name="user-minus" />
-    </Button>{" "}
-  </span>
+  <Badge
+    style={{ marginRight: "5px", fontSize: "150%" }}
+    pill
+    variant="primary"
+  >
+    <span style={{ margin: "5px" }}>{userName}</span>{" "}
+  </Badge>
 );
 
 export default ScreenView;

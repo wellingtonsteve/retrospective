@@ -4,6 +4,7 @@ import firebase from "./firebase.js";
 import ScreenView from "./ScreenView.js";
 import UserView from "./UserView";
 import Button from "react-bootstrap/Button";
+import AdminView from "./AdminView";
 
 const users = [
   "Liljana",
@@ -44,6 +45,8 @@ class App extends Component {
     this.db = firebase.firestore();
     const firstPage = window.location.search.includes("screenview")
       ? "screenview"
+      : window.location.search.includes("adminview")
+      ? "adminview"
       : "start";
     this.state = {
       page: firstPage,
@@ -93,6 +96,12 @@ class App extends Component {
       return (
         <div className="App">
           <ScreenView />
+        </div>
+      );
+    } else if (this.state.page === "adminview") {
+      return (
+        <div className="App">
+          <AdminView />
         </div>
       );
     } else {
