@@ -33,12 +33,42 @@ class AdminView extends Component {
       });
   };
 
+  bootAll = () => {
+    this.db
+      .collection("retros")
+      .doc("questions")
+      .update({
+        people: []
+      });
+  };
+
   deleteVote = vote => {
     this.db
       .collection("retros")
       .doc("questions")
       .update({
         votes: firebase.firestore.FieldValue.arrayRemove(vote)
+      });
+  };
+
+  deleteVotes = votes => {
+    this.db
+      .collection("retros")
+      .doc("questions")
+      .update({
+        votes: firebase.firestore.FieldValue.arrayRemove(...votes)
+      });
+  };
+
+  fullReset = () => {
+    this.db
+      .collection("retros")
+      .doc("questions")
+      .update({
+        currentQuestion: -1,
+        currentScrollDirection: null,
+        people: [],
+        votes: []
       });
   };
 
@@ -83,7 +113,7 @@ class AdminView extends Component {
                 onClick={() => this.handleSelect(-1, null)}
                 style={{ margin: "1px" }}
               >
-                Go to Start
+                Waitscreen
               </Button>
               <br />
               <Button
@@ -101,6 +131,9 @@ class AdminView extends Component {
                 style={{ margin: "1px" }}
               >
                 &gt;
+              </Button>
+              <Button variant="danger" onClick={this.fullReset}>
+                FULL RESET
               </Button>
             </td>
             {this.state.questions.map((question, index) => (
@@ -142,7 +175,6 @@ class AdminView extends Component {
             <tr key={person}>
               <td
                 style={{
-                  borderTop: "2px solid white",
                   borderWidth: "2px",
                   verticalAlign: "center",
                   padding: "5px",
@@ -150,11 +182,7 @@ class AdminView extends Component {
                   textAlign: "center"
                 }}
               >
-                <Button
-                  size="sm"
-                  variant="outline-danger"
-                  onClick={() => this.bootUser(person)}
-                >
+                <Button variant="danger" onClick={() => this.bootUser(person)}>
                   {person}
                 </Button>
               </td>
@@ -166,7 +194,6 @@ class AdminView extends Component {
                     verticalAlign: "center",
                     padding: "5px",
                     fontSize: "110%",
-                    fontWeight: "bold",
                     textAlign: "center"
                   }}
                 >
@@ -177,7 +204,7 @@ class AdminView extends Component {
                     .map((vote, index) => (
                       <Button
                         key={index}
-                        variant={"outline-" + variantMap[vote.score - 1]}
+                        variant={"" + variantMap[vote.score - 1]}
                         onClick={() => this.deleteVote(vote)}
                       >
                         {vote.score}
@@ -194,15 +221,86 @@ class AdminView extends Component {
                   textAlign: "center"
                 }}
               >
-                {this.state.votes
-                  .filter(vote => vote.user === person)
-                  .reduce((acc, vote) => acc + vote.score, 0)}
-                <span style={{ fontSize: "80%" }}>
-                  /{this.state.questions.length * 5}
-                </span>
+                <Button
+                  variant="danger"
+                  onClick={() =>
+                    this.deleteVotes(
+                      this.state.votes.filter(vote => vote.user === person)
+                    )
+                  }
+                >
+                  {this.state.votes
+                    .filter(vote => vote.user === person)
+                    .reduce((acc, vote) => acc + vote.score, 0)}
+                  <span style={{ fontSize: "80%" }}>
+                    /{this.state.questions.length * 5}
+                  </span>
+                </Button>
               </td>
             </tr>
           ))}
+          <tr>
+            <td
+              style={{
+                borderWidth: "2px",
+                verticalAlign: "center",
+                padding: "5px",
+                fontSize: "110%",
+                textAlign: "center"
+              }}
+            >
+              <Button onClick={this.bootAll} variant="danger">
+                {this.state.people.length}
+              </Button>
+            </td>
+            {this.state.questions.map((question, index) => (
+              <td
+                key={index}
+                style={{
+                  borderWidth: "2px",
+                  verticalAlign: "center",
+                  padding: "5px",
+                  fontSize: "110%",
+                  textAlign: "center"
+                }}
+              >
+                <Button
+                  onClick={() =>
+                    this.deleteVotes(
+                      this.state.votes.filter(vote => vote.question === index)
+                    )
+                  }
+                  variant="danger"
+                >
+                  {this.state.votes
+                    .filter(vote => vote.question === index)
+                    .reduce((acc, vote) => acc + vote.score, 0)}
+                  <span style={{ fontSize: "80%" }}>
+                    /{this.state.people.length * 5}
+                  </span>
+                </Button>
+              </td>
+            ))}
+            <td
+              style={{
+                borderWidth: "2px",
+                verticalAlign: "center",
+                padding: "5px",
+                fontSize: "110%",
+                textAlign: "center"
+              }}
+            >
+              <Button
+                onClick={() => this.deleteVotes(this.state.votes)}
+                variant="danger"
+              >
+                {this.state.votes.reduce((acc, vote) => acc + vote.score, 0)}
+                <span style={{ fontSize: "80%" }}>
+                  /{this.state.people.length * this.state.questions.length * 5}
+                </span>
+              </Button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </Jumbotron>
