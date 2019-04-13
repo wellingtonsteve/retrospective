@@ -1,88 +1,19 @@
-import firebase from "./firebase";
-import React, { Component } from "react";
+import React from "react";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Button from "react-bootstrap/Button";
 
-class AdminView extends Component {
-  constructor(props) {
-    super(props);
-    this.db = firebase.firestore();
-    this.state = {
-      currentQuestion: -1,
-      people: [],
-      questions: [],
-      votes: []
-    };
-  }
+const AdminView = ({
+  databaseState,
+  switchToQuestionAction,
+  bootUserAction,
+  bootAllUsersAction,
+  deleteVoteAction,
+  deleteVotesAction,
+  fullResetAction
+}) => {
+  const { currentQuestion, people, questions, votes } = databaseState;
 
-  componentDidMount = () => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .onSnapshot(questions => {
-        this.setState({ votes: [], ...questions.data() });
-      });
-  };
-
-  bootUser = userName => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        people: firebase.firestore.FieldValue.arrayRemove(userName)
-      });
-  };
-
-  bootAll = () => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        people: []
-      });
-  };
-
-  deleteVote = vote => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        votes: firebase.firestore.FieldValue.arrayRemove(vote)
-      });
-  };
-
-  deleteVotes = votes => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        votes: firebase.firestore.FieldValue.arrayRemove(...votes)
-      });
-  };
-
-  fullReset = () => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        currentQuestion: -1,
-        currentScrollDirection: null,
-        people: [],
-        votes: []
-      });
-  };
-
-  handleSelect = (selectedIndex, scrollDirection) => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        currentQuestion: selectedIndex,
-        currentScrollDirection: scrollDirection
-      });
-  };
-
-  render = () => (
+  return (
     <Jumbotron
       style={{
         padding: "10px",
@@ -110,7 +41,7 @@ class AdminView extends Component {
               }}
             >
               <Button
-                onClick={() => this.handleSelect(-1, null)}
+                onClick={() => switchToQuestionAction(-1, null)}
                 style={{ margin: "1px" }}
               >
                 Waitscreen
@@ -118,7 +49,7 @@ class AdminView extends Component {
               <br />
               <Button
                 onClick={() =>
-                  this.handleSelect(this.state.currentQuestion - 1, "prev")
+                  switchToQuestionAction(currentQuestion - 1, "prev")
                 }
                 style={{ margin: "1px" }}
               >
@@ -126,17 +57,17 @@ class AdminView extends Component {
               </Button>
               <Button
                 onClick={() =>
-                  this.handleSelect(this.state.currentQuestion + 1, "next")
+                  switchToQuestionAction(currentQuestion + 1, "next")
                 }
                 style={{ margin: "1px" }}
               >
                 &gt;
               </Button>
-              <Button variant="danger" onClick={this.fullReset}>
+              <Button variant="danger" onClick={fullResetAction}>
                 FULL RESET
               </Button>
             </td>
-            {this.state.questions.map((question, index) => (
+            {questions.map((question, index) => (
               <td
                 key={index}
                 style={{
@@ -146,11 +77,10 @@ class AdminView extends Component {
                   background: "#" + question.colour,
                   fontSize: "110%",
                   textAlign: "center",
-                  fontWeight:
-                    this.state.currentQuestion === index ? "bold" : "normal"
+                  fontWeight: currentQuestion === index ? "bold" : "normal"
                 }}
               >
-                <Button onClick={() => this.handleSelect(index, "prev")}>
+                <Button onClick={() => switchToQuestionAction(index, "prev")}>
                   Go
                 </Button>
                 <br />
@@ -171,7 +101,7 @@ class AdminView extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.state.people.map(person => (
+          {people.map(person => (
             <tr key={person}>
               <td
                 style={{
@@ -182,11 +112,11 @@ class AdminView extends Component {
                   textAlign: "center"
                 }}
               >
-                <Button variant="danger" onClick={() => this.bootUser(person)}>
+                <Button variant="danger" onClick={() => bootUserAction(person)}>
                   {person}
                 </Button>
               </td>
-              {this.state.questions.map((question, index) => (
+              {questions.map((question, index) => (
                 <td
                   key={index}
                   style={{
@@ -197,15 +127,15 @@ class AdminView extends Component {
                     textAlign: "center"
                   }}
                 >
-                  {this.state.votes
+                  {votes
                     .filter(
-                      vote => vote.question === index && vote.user === person
+                      vote => vote.question === index && vote.name === person
                     )
                     .map((vote, index) => (
                       <Button
                         key={index}
                         variant={"" + variantMap[vote.score - 1]}
-                        onClick={() => this.deleteVote(vote)}
+                        onClick={() => deleteVoteAction(vote)}
                       >
                         {vote.score}
                       </Button>
@@ -224,16 +154,16 @@ class AdminView extends Component {
                 <Button
                   variant="danger"
                   onClick={() =>
-                    this.deleteVotes(
-                      this.state.votes.filter(vote => vote.user === person)
+                    deleteVotesAction(
+                      votes.filter(vote => vote.name === person)
                     )
                   }
                 >
-                  {this.state.votes
-                    .filter(vote => vote.user === person)
+                  {votes
+                    .filter(vote => vote.name === person)
                     .reduce((acc, vote) => acc + vote.score, 0)}
                   <span style={{ fontSize: "80%" }}>
-                    /{this.state.questions.length * 5}
+                    /{questions.length * 5}
                   </span>
                 </Button>
               </td>
@@ -249,11 +179,11 @@ class AdminView extends Component {
                 textAlign: "center"
               }}
             >
-              <Button onClick={this.bootAll} variant="danger">
-                {this.state.people.length}
+              <Button onClick={bootAllUsersAction} variant="danger">
+                {people.length}
               </Button>
             </td>
-            {this.state.questions.map((question, index) => (
+            {questions.map((question, index) => (
               <td
                 key={index}
                 style={{
@@ -266,18 +196,16 @@ class AdminView extends Component {
               >
                 <Button
                   onClick={() =>
-                    this.deleteVotes(
-                      this.state.votes.filter(vote => vote.question === index)
+                    deleteVotesAction(
+                      votes.filter(vote => vote.question === index)
                     )
                   }
                   variant="danger"
                 >
-                  {this.state.votes
+                  {votes
                     .filter(vote => vote.question === index)
                     .reduce((acc, vote) => acc + vote.score, 0)}
-                  <span style={{ fontSize: "80%" }}>
-                    /{this.state.people.length * 5}
-                  </span>
+                  <span style={{ fontSize: "80%" }}>/{people.length * 5}</span>
                 </Button>
               </td>
             ))}
@@ -290,13 +218,10 @@ class AdminView extends Component {
                 textAlign: "center"
               }}
             >
-              <Button
-                onClick={() => this.deleteVotes(this.state.votes)}
-                variant="danger"
-              >
-                {this.state.votes.reduce((acc, vote) => acc + vote.score, 0)}
+              <Button onClick={() => deleteVotesAction(votes)} variant="danger">
+                {votes.reduce((acc, vote) => acc + vote.score, 0)}
                 <span style={{ fontSize: "80%" }}>
-                  /{this.state.people.length * this.state.questions.length * 5}
+                  /{people.length * questions.length * 5}
                 </span>
               </Button>
             </td>
@@ -305,7 +230,7 @@ class AdminView extends Component {
       </table>
     </Jumbotron>
   );
-}
+};
 
 const variantMap = ["danger", "danger", "warning", "success", "success"];
 

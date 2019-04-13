@@ -1,6 +1,5 @@
-import firebase from "./firebase";
 import LocationCode from "./LocationCode.js";
-import React, { Component } from "react";
+import React from "react";
 import FontAwesome from "react-fontawesome";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import Carousel from "react-bootstrap/Carousel";
@@ -8,67 +7,17 @@ import Badge from "react-bootstrap/Badge";
 
 const variantMap = ["danger", "danger", "warning", "success", "success"];
 
-class ScreenView extends Component {
-  constructor(props) {
-    super(props);
-    this.db = firebase.firestore();
-    this.state = {
-      currentQuestion: -1,
-      people: [],
-      questions: [],
-      votes: []
-    };
-  }
+const ScreenView = ({ databaseState, switchToQuestionAction }) =>
+  databaseState.currentQuestion < 0 ? (
+    <ScreenWaitingView people={databaseState.people} />
+  ) : (
+    <QuestionsView
+      databaseState={databaseState}
+      switchToQuestionAction={switchToQuestionAction}
+    />
+  );
 
-  componentDidMount = () => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .onSnapshot(questions => {
-        this.setState({ votes: [], ...questions.data() });
-      });
-  };
-
-  bootUser = userName => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        people: firebase.firestore.FieldValue.arrayRemove(userName)
-      });
-  };
-
-  handleSelect = (selectedIndex, scrollDirection) => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .update({
-        currentQuestion: selectedIndex,
-        currentScrollDirection: scrollDirection
-      });
-  };
-
-  render = () =>
-    this.state.currentQuestion === -1 ? (
-      <ScreenWaitingView
-        people={this.state.people}
-        bootUser={this.bootUser}
-        startAction={() =>
-          this.db
-            .collection("retros")
-            .doc("questions")
-            .update({ currentQuestion: 0 })
-        }
-      />
-    ) : (
-      <QuestionsView
-        questionState={this.state}
-        handleSelect={this.handleSelect}
-      />
-    );
-}
-
-const ScreenWaitingView = ({ people, bootUser, startAction }) => (
+const ScreenWaitingView = ({ people }) => (
   <div>
     {people.length === 0 ? (
       <Jumbotron>
@@ -81,11 +30,7 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
         </h1>
         <p>
           {people.map(userName => (
-            <ScreenUserTag
-              key={userName}
-              userName={userName}
-              bootAction={() => bootUser(userName)}
-            />
+            <ScreenUserTag key={userName} userName={userName} />
           ))}
         </p>
       </Jumbotron>
@@ -94,7 +39,7 @@ const ScreenWaitingView = ({ people, bootUser, startAction }) => (
   </div>
 );
 
-const voteToEmoji = score => (
+const VotePill = ({ score }) => (
   <span>
     <Badge
       pill
@@ -106,32 +51,25 @@ const voteToEmoji = score => (
   </span>
 );
 
-function everyoneVoted(people, votes, index) {
-  const votedUsers = votes
-    .filter(vote => vote.question === index)
-    .map(vote => vote.user);
-  return (
-    people.filter(person => votedUsers.includes(person)).length ===
-    people.length
-  );
-}
+const hasEveryoneVoted = (people, votes, currentQuestionIndex) =>
+  peopleWhoHaveNotVoted(people, votes, currentQuestionIndex).length === 0;
 
-function peopleWhoHaveNotVoted(people, votes, index) {
-  const votedUsers = votes
-    .filter(vote => vote.question === index)
-    .map(vote => vote.user);
-  return people.filter(person => !votedUsers.includes(person));
-}
+const peopleWhoHaveNotVoted = (people, votes, currentQuestionIndex) => {
+  const voteUsers = votes
+    .filter(vote => vote.question === currentQuestionIndex)
+    .map(vote => vote.name);
+  return people.filter(person => !voteUsers.includes(person));
+};
 
 const QuestionsView = ({
-  questionState: {
+  databaseState: {
     currentQuestion,
-    people,
     currentScrollDirection,
+    people,
     questions,
     votes
   },
-  handleSelect
+  switchToQuestionAction
 }) => {
   const ScoreRow = ({ score }) => {
     return (
@@ -144,13 +82,15 @@ const QuestionsView = ({
               borderWidth: "2px"
             }}
           >
-            {everyoneVoted(people, votes, index) ? (
+            {hasEveryoneVoted(people, votes, index) ? (
               <span>
                 {votes
                   .filter(
                     vote => vote.question === index && vote.score === score
                   )
-                  .map(vote => voteToEmoji(vote.score))}
+                  .map(vote => (
+                    <VotePill key={vote.name} score={vote.score} />
+                  ))}
                 <span>​</span>
                 {/* There's a zero width space there to make sure the row keeps its line height */}
               </span>
@@ -202,7 +142,6 @@ const QuestionsView = ({
                   key={index}
                   style={{
                     borderWidth: "2px",
-                    // borderColor: "rgb(233, 236, 239)",
                     verticalAlign: "center",
                     padding: "5px",
                     background: "#" + question.colour,
@@ -221,7 +160,7 @@ const QuestionsView = ({
       <Carousel
         activeIndex={currentQuestion}
         direction={currentScrollDirection}
-        onSelect={handleSelect}
+        onSelect={switchToQuestionAction}
         interval={null}
         controls={false}
         indicators={true}
@@ -264,7 +203,7 @@ const QuestionsView = ({
   );
 };
 
-const ScreenUserTag = ({ userName, bootAction }) => (
+const ScreenUserTag = ({ userName }) => (
   <Badge
     style={{ marginRight: "5px", fontSize: "150%" }}
     pill

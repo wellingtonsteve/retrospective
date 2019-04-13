@@ -1,121 +1,71 @@
 import React, { Component } from "react";
 import "./App.css";
-import firebase from "./firebase.js";
+import FirebaseWrapper from "./FirebaseWrapper.js";
 import ScreenView from "./ScreenView.js";
 import UserView from "./UserView";
-import Button from "react-bootstrap/Button";
 import AdminView from "./AdminView";
-
-const users = [
-  "Liljana",
-  "Cameron",
-  "Matt",
-  "Layne",
-  "Steve",
-  "Alan",
-  "James"
-].sort();
-
-const loginToApp = initials => {
-  const db = firebase.firestore();
-  return db
-    .collection("retros")
-    .doc("questions")
-    .update({
-      people: firebase.firestore.FieldValue.arrayUnion(initials)
-    });
-};
-
-const Start = ({ screenViewAction, loginAction }) => (
-  <div>
-    <div className="userlist">
-      <h1>Choose your name</h1>
-      {users.map(user => (
-        <Button size="lg" key={user} onClick={() => loginAction(user)}>
-          {user}
-        </Button>
-      ))}
-    </div>
-  </div>
-);
+import LoginView from "./LoginView";
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.db = firebase.firestore();
-    const firstPage = window.location.search.includes("screenview")
-      ? "screenview"
-      : window.location.search.includes("adminview")
-      ? "adminview"
-      : "start";
     this.state = {
-      page: firstPage,
       name: null,
-      people: []
+      databaseState: {
+        currentQuestion: -1,
+        currentScrollDirection: null,
+        people: [],
+        questions: [],
+        votes: []
+      }
     };
   }
 
-  componentDidMount = () => {
-    this.db
-      .collection("retros")
-      .doc("questions")
-      .onSnapshot(questions => {
-        const people = questions.data().people;
-        this.setState({
-          people: people
-        });
-      });
-  };
-
-  goToScreenView = () => {
-    this.setState({
-      page: "screenview"
-    });
-  };
-
-  login = initials => {
-    loginToApp(initials).then(() =>
-      this.setState({
-        page: "userview",
-        name: initials
-      })
+  componentDidMount = () =>
+    FirebaseWrapper.addDatabaseListener(databaseState =>
+      this.setState({ databaseState })
     );
-  };
 
-  render() {
-    if (this.state.page === "start" || this.userWasBooted()) {
+  render = () => {
+    if (window.location.search.includes("screenview")) {
       return (
-        <div className="App">
-          <Start
-            screenViewAction={this.goToScreenView}
-            loginAction={this.login}
-          />
-        </div>
+        <ScreenView
+          databaseState={this.state.databaseState}
+          switchToQuestionAction={FirebaseWrapper.switchToQuestionAction}
+        />
       );
-    } else if (this.state.page === "screenview") {
+    } else if (window.location.search.includes("adminview")) {
       return (
-        <div className="App">
-          <ScreenView />
-        </div>
+        <AdminView
+          databaseState={this.state.databaseState}
+          switchToQuestionAction={FirebaseWrapper.switchToQuestionAction}
+          bootUserAction={FirebaseWrapper.bootUserAction}
+          bootAllUsersAction={FirebaseWrapper.bootAllUsersAction}
+          deleteVoteAction={FirebaseWrapper.deleteVoteAction}
+          deleteVotesAction={FirebaseWrapper.deleteVotesAction}
+          fullResetAction={FirebaseWrapper.fullResetAction}
+        />
       );
-    } else if (this.state.page === "adminview") {
-      return (
-        <div className="App">
-          <AdminView />
-        </div>
-      );
+    } else if (this.userNeedsToLogin()) {
+      return <LoginView loginAction={this.login} />;
     } else {
       return (
-        <div className="App">
-          <UserView user={this.state.name} />
-        </div>
+        <UserView
+          databaseState={this.state.databaseState}
+          name={this.state.name}
+          recordVoteAction={FirebaseWrapper.recordVoteAction}
+        />
       );
     }
-  }
+  };
 
-  userWasBooted = () =>
-    this.state.page === "userview" &&
-    !this.state.people.includes(this.state.name);
+  userNeedsToLogin = () =>
+    !this.state.databaseState.people.includes(this.state.name);
+
+  login = person =>
+    FirebaseWrapper.loginToAppAction(person).then(() => this.loggedIn(person));
+
+  loggedIn = person => this.setState({ name: person });
 }
 
 export default App;
