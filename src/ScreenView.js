@@ -19,24 +19,28 @@ const ScreenView = ({ databaseState, switchToQuestionAction }) =>
 
 const ScreenWaitingView = ({ people }) => (
   <div>
-    {people.length === 0 ? (
-      <Jumbotron>
-        <h1>No one here yet</h1>
-      </Jumbotron>
-    ) : (
-      <Jumbotron>
-        <h1>
-          {people.length} {people.length === 1 ? "person" : "people"} here:
-        </h1>
-        <p>
-          {people.map(userName => (
-            <ScreenUserTag key={userName} userName={userName} />
-          ))}
-        </p>
-      </Jumbotron>
-    )}
+    {people.length === 0 ? <NoPeopleHere /> : <PeopleHere people={people} />}
     <LocationCode />
   </div>
+);
+
+const NoPeopleHere = () => (
+  <Jumbotron>
+    <h1>No one here yet</h1>
+  </Jumbotron>
+);
+
+const PeopleHere = ({ people }) => (
+  <Jumbotron>
+    <h1>
+      {people.length} {people.length === 1 ? "person" : "people"} here:
+    </h1>
+    <p>
+      {people.map(userName => (
+        <ScreenUserTag key={userName} userName={userName} />
+      ))}
+    </p>
+  </Jumbotron>
 );
 
 const VotePill = ({ score }) => (
