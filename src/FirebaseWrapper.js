@@ -48,6 +48,31 @@ const fullResetAction = () =>
     votes: []
   });
 
+const archiveDataAction = () => {
+  const now = new Date();
+  const archiveDest =
+    docToUse +
+    "Archive-" +
+    [
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds(),
+      now.getMilliseconds()
+    ].join("-");
+  return questionsDoc.get().then(questions => {
+    questionsDoc.parent
+      .doc(archiveDest)
+      .set(questions.data())
+      .then(() => {
+        alert("Archived to " + archiveDest);
+      });
+  });
+  // return questionsDoc.parent.doc("questionsArchive-" + timestamp).set(questionsDoc.get())
+};
+
 export default {
   addDatabaseListener,
   loginToAppAction,
@@ -57,5 +82,6 @@ export default {
   bootAllUsersAction,
   deleteVoteAction,
   deleteVotesAction,
-  fullResetAction
+  fullResetAction,
+  archiveDataAction
 };

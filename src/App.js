@@ -44,6 +44,7 @@ class App extends Component {
           deleteVoteAction={FirebaseWrapper.deleteVoteAction}
           deleteVotesAction={FirebaseWrapper.deleteVotesAction}
           fullResetAction={FirebaseWrapper.fullResetAction}
+          archiveDataAction={FirebaseWrapper.archiveDataAction}
         />
       );
     } else if (this.userNeedsToLogin()) {

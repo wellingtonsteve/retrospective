@@ -9,7 +9,8 @@ const AdminView = ({
   bootAllUsersAction,
   deleteVoteAction,
   deleteVotesAction,
-  fullResetAction
+  fullResetAction,
+  archiveDataAction
 }) => {
   const { currentQuestion, people, questions, votes } = databaseState;
 
@@ -63,8 +64,19 @@ const AdminView = ({
               >
                 &gt;
               </Button>
-              <Button variant="danger" onClick={fullResetAction}>
+              <Button
+                variant="danger"
+                onClick={fullResetAction}
+                style={{ margin: "1px" }}
+              >
                 FULL RESET
+              </Button>
+              <Button
+                variant="danger"
+                onClick={archiveDataAction}
+                style={{ margin: "1px" }}
+              >
+                ARCHIVE
               </Button>
             </td>
             {questions.map((question, index) => (
