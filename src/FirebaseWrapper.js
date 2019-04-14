@@ -1,7 +1,10 @@
 import firebase from "./firebase.js";
 
+const docToUse = window.location.href.includes("localhost")
+  ? "test"
+  : "questions";
 const db = firebase.firestore();
-const questionsDoc = db.collection("retros").doc("questions");
+const questionsDoc = db.collection("retros").doc(docToUse);
 const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
 const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
 
