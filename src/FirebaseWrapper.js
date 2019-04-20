@@ -2,7 +2,7 @@ import firebase from "./firebase.js";
 
 const docToUse = window.location.href.includes("localhost")
   ? "test"
-  : "questions";
+  : "production";
 const db = firebase.firestore();
 const questionsDoc = db.collection("retros").doc(docToUse);
 const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
@@ -70,7 +70,6 @@ const archiveDataAction = () => {
         alert("Archived to " + archiveDest);
       });
   });
-  // return questionsDoc.parent.doc("questionsArchive-" + timestamp).set(questionsDoc.get())
 };
 
 export default {
