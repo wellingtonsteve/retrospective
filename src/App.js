@@ -5,12 +5,15 @@ import ScreenView from "./ScreenView.js";
 import UserView from "./UserView";
 import AdminView from "./AdminView";
 import LoginView from "./LoginView";
+import FontAwesome from "react-fontawesome";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: null,
+      signedInUid: null,
+      signInFailureError: null,
       databaseState: {
         currentQuestion: -1,
         currentScrollDirection: null,
@@ -21,13 +24,44 @@ class App extends Component {
     };
   }
 
-  componentDidMount = () =>
+  componentDidMount = () => {
+    FirebaseWrapper.signInAction()
+      .then(credentials => {
+        this.setState({ signedInUid: credentials.user.uid });
+        this.startListeningToDatabase();
+        console.log({ credentials });
+      })
+      .catch(error => {
+        this.setState({ signInFailureError: error });
+        console.log({ error });
+      });
+  };
+
+  startListeningToDatabase = () =>
     FirebaseWrapper.addDatabaseListener(databaseState =>
       this.setState({ databaseState })
     );
 
   render = () => {
-    if (window.location.search.includes("screenview")) {
+    if (this.state.signInFailureError !== null) {
+      return (
+        <div key="failure">
+          <p>Error creating session...</p>
+          <p>{this.state.signInFailureError.message}</p>
+        </div>
+      );
+    } else if (this.userNeedsToSignIn()) {
+      return (
+        <div key="waiting">
+          <p>Creating session...</p>
+          <FontAwesome
+            style={{ fontSize: "150%" }}
+            className="rotating"
+            name="spinner"
+          />
+        </div>
+      );
+    } else if (window.location.search.includes("screenview")) {
       return (
         <ScreenView
           databaseState={this.state.databaseState}
@@ -59,6 +93,8 @@ class App extends Component {
       );
     }
   };
+
+  userNeedsToSignIn = () => this.state.signedInUid === null;
 
   userNeedsToLogin = () =>
     !this.state.databaseState.people.includes(this.state.name);

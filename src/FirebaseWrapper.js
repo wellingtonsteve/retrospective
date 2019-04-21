@@ -8,6 +8,8 @@ const questionsDoc = db.collection("retros").doc(docToUse);
 const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
 const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
 
+const signInAction = () => firebase.auth().signInAnonymously();
+
 const addDatabaseListener = listener =>
   questionsDoc.onSnapshot(questions => listener(questions.data()));
 
@@ -73,6 +75,7 @@ const archiveDataAction = () => {
 };
 
 export default {
+  signInAction,
   addDatabaseListener,
   loginToAppAction,
   switchToQuestionAction,
