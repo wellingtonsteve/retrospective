@@ -1,19 +1,22 @@
 import React, { Component } from "react";
 import "./App.css";
-import FirebaseWrapper from "./FirebaseWrapper.js";
 import ScreenView from "./ScreenView.js";
 import UserView from "./UserView";
 import AdminView from "./AdminView";
 import LoginView from "./LoginView";
 import FontAwesome from "react-fontawesome";
+import FirebaseWrapper from "./FirebaseWrapper";
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.joinedYet = false;
     this.state = {
-      name: null,
       signedInUid: null,
       signInFailureError: null,
+      signInState: undefined,
+      permissionedUsers: [],
+      allSignIns: [],
       databaseState: {
         currentQuestion: -1,
         currentScrollDirection: null,
@@ -27,8 +30,40 @@ class App extends Component {
   componentDidMount = () => {
     FirebaseWrapper.signInAction()
       .then(credentials => {
-        this.setState({ signedInUid: credentials.user.uid });
-        this.startListeningToDatabase();
+        const signedInUid = credentials.user.uid;
+        this.setState({ signedInUid });
+
+        if (window.location.search.includes("screenview")) {
+          FirebaseWrapper.addRootDatabaseListener(databaseState =>
+            this.setState({ databaseState })
+          );
+        } else if (window.location.search.includes("adminview")) {
+          FirebaseWrapper.addAllSigninsListener(allSignIns => {
+            this.setState({
+              allSignIns: allSignIns.docs.map(doc => {
+                return {
+                  uid: doc.id,
+                  data: doc.data()
+                };
+              })
+            });
+          });
+          FirebaseWrapper.addAllPermissionedUsersListener(permissionedUsers => {
+            this.setState({
+              permissionedUsers: permissionedUsers.docs.map(doc => {
+                return {
+                  uid: doc.id,
+                  data: doc.data()
+                };
+              })
+            });
+          });
+          FirebaseWrapper.addRootDatabaseListener(databaseState =>
+            this.setState({ databaseState })
+          );
+        } else {
+          this.startListeningToOwnSigninSection(signedInUid);
+        }
         console.log({ credentials });
       })
       .catch(error => {
@@ -37,10 +72,23 @@ class App extends Component {
       });
   };
 
-  startListeningToDatabase = () =>
-    FirebaseWrapper.addDatabaseListener(databaseState =>
-      this.setState({ databaseState })
-    );
+  startListeningToOwnSigninSection = uid =>
+    FirebaseWrapper.addSigninSectionListener(uid, signInState => {
+      this.setState({ signInState });
+      console.log({ signInState });
+      if (
+        !this.joinedYet &&
+        signInState !== undefined &&
+        signInState.loginAcceptedHint
+      ) {
+        console.log("Joining retro as " + signInState.name);
+        this.joinedYet = true;
+        FirebaseWrapper.joinRetro(signInState.name);
+        FirebaseWrapper.addRootDatabaseListener(databaseState =>
+          this.setState({ databaseState })
+        );
+      }
+    });
 
   render = () => {
     if (this.state.signInFailureError !== null) {
@@ -50,15 +98,17 @@ class App extends Component {
           <p>{this.state.signInFailureError.message}</p>
         </div>
       );
-    } else if (this.userNeedsToSignIn()) {
+    } else if (this.state.signedInUid === null) {
       return (
         <div key="waiting">
-          <p>Creating session...</p>
-          <FontAwesome
-            style={{ fontSize: "150%" }}
-            className="rotating"
-            name="spinner"
-          />
+          <p>
+            Creating session...
+            <FontAwesome
+              style={{ fontSize: "150%" }}
+              className="rotating"
+              name="spinner"
+            />
+          </p>
         </div>
       );
     } else if (window.location.search.includes("screenview")) {
@@ -72,6 +122,9 @@ class App extends Component {
       return (
         <AdminView
           databaseState={this.state.databaseState}
+          allSignins={this.state.allSignIns}
+          permissionedUsers={this.state.permissionedUsers}
+          approveUidAction={FirebaseWrapper.approveUidAction}
           switchToQuestionAction={FirebaseWrapper.switchToQuestionAction}
           bootUserAction={FirebaseWrapper.bootUserAction}
           bootAllUsersAction={FirebaseWrapper.bootAllUsersAction}
@@ -81,28 +134,21 @@ class App extends Component {
           archiveDataAction={FirebaseWrapper.archiveDataAction}
         />
       );
-    } else if (this.userNeedsToLogin()) {
+    } else if (this.state.signInState === undefined) {
       return <LoginView loginAction={this.login} />;
     } else {
       return (
         <UserView
           databaseState={this.state.databaseState}
-          name={this.state.name}
+          signInState={this.state.signInState}
           recordVoteAction={FirebaseWrapper.recordVoteAction}
         />
       );
     }
   };
 
-  userNeedsToSignIn = () => this.state.signedInUid === null;
-
-  userNeedsToLogin = () =>
-    !this.state.databaseState.people.includes(this.state.name);
-
-  login = person =>
-    FirebaseWrapper.loginToAppAction(person).then(() => this.loggedIn(person));
-
-  loggedIn = person => this.setState({ name: person });
+  login = name =>
+    FirebaseWrapper.loginToAppAction(this.state.signedInUid, name);
 }
 
 export default App;

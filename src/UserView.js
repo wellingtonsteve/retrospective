@@ -6,24 +6,45 @@ import Carousel from "react-bootstrap/Carousel";
 
 const variantMap = ["danger", "danger", "warning", "success", "success"];
 
-const UserView = ({ databaseState, name, recordVoteAction }) =>
+const UserView = ({ databaseState, signInState, recordVoteAction }) =>
   databaseState.currentQuestion === -1 ? (
-    <UserWaitingScreen name={name} peopleCount={databaseState.people.length} />
+    <UserWaitingScreen
+      signInState={signInState}
+      peopleCount={databaseState.people.length}
+    />
   ) : (
     <QuestionView
       databaseState={databaseState}
-      name={name}
+      name={signInState.name}
       recordVoteAction={recordVoteAction}
     />
   );
 
-const UserWaitingScreen = ({ name, peopleCount }) => (
+const UserWaitingScreen = ({ signInState, peopleCount }) => (
   <Jumbotron>
-    <h1>Hi {name}</h1>
+    <h1>Hi {signInState.name}</h1>
     <p>
       {peopleCount} {peopleCount === 1 ? "person" : "people"} here
     </p>
-    <p>Waiting for retro to start...</p>
+    {signInState.loginAcceptedHint ? (
+      <p>
+        Waiting for retro to start...
+        <FontAwesome
+          style={{ fontSize: "150%" }}
+          className="rotating"
+          name="spinner"
+        />
+      </p>
+    ) : (
+      <p>
+        Waiting for sign-in approval...
+        <FontAwesome
+          style={{ fontSize: "150%" }}
+          className="rotating"
+          name="spinner"
+        />
+      </p>
+    )}
   </Jumbotron>
 );
 

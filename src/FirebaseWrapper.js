@@ -4,26 +4,55 @@ const docToUse = window.location.href.includes("localhost")
   ? "test"
   : "production";
 const db = firebase.firestore();
-const questionsDoc = db.collection("retros").doc(docToUse);
+const retroDoc = db.collection("retros").doc(docToUse);
 const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
 const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
 
 const signInAction = () => firebase.auth().signInAnonymously();
 
-const addDatabaseListener = listener =>
-  questionsDoc.onSnapshot(questions => listener(questions.data()));
+const addSigninSectionListener = (uid, listener) =>
+  retroDoc
+    .collection("signins")
+    .doc(uid)
+    .onSnapshot(doc => listener(doc.data()));
 
-const loginToAppAction = person =>
-  questionsDoc.update({ people: arrayUnion(person) });
+const addAllSigninsListener = listener =>
+  retroDoc.collection("signins").onSnapshot(docs => listener(docs));
+
+const addAllPermissionedUsersListener = listener =>
+  retroDoc.collection("permissionedUsers").onSnapshot(docs => listener(docs));
+
+const addRootDatabaseListener = listener =>
+  retroDoc.onSnapshot(doc => listener(doc.data()));
+
+const loginToAppAction = (uid, name) =>
+  retroDoc
+    .collection("signins")
+    .doc(uid)
+    .set({ name, loginAcceptedHint: false });
+
+const approveUidAction = uid =>
+  retroDoc
+    .collection("permissionedUsers")
+    .doc(uid)
+    .set({ user: true })
+    .then(() =>
+      retroDoc
+        .collection("signins")
+        .doc(uid)
+        .update({ loginAcceptedHint: true })
+    );
+
+const joinRetro = person => retroDoc.update({ people: arrayUnion(person) });
 
 const switchToQuestionAction = (selectedIndex, scrollDirection) =>
-  questionsDoc.update({
+  retroDoc.update({
     currentQuestion: selectedIndex,
     currentScrollDirection: scrollDirection
   });
 
 const recordVoteAction = (name, score, questionIndex) =>
-  questionsDoc.update({
+  retroDoc.update({
     votes: arrayUnion({
       name: name,
       score: score,
@@ -31,19 +60,17 @@ const recordVoteAction = (name, score, questionIndex) =>
     })
   });
 
-const bootUserAction = name =>
-  questionsDoc.update({ people: arrayRemove(name) });
+const bootUserAction = name => retroDoc.update({ people: arrayRemove(name) });
 
-const bootAllUsersAction = () => questionsDoc.update({ people: [] });
+const bootAllUsersAction = () => retroDoc.update({ people: [] });
 
-const deleteVoteAction = vote =>
-  questionsDoc.update({ votes: arrayRemove(vote) });
+const deleteVoteAction = vote => retroDoc.update({ votes: arrayRemove(vote) });
 
 const deleteVotesAction = votes =>
-  questionsDoc.update({ votes: arrayRemove(...votes) });
+  retroDoc.update({ votes: arrayRemove(...votes) });
 
 const fullResetAction = () =>
-  questionsDoc.update({
+  retroDoc.update({
     currentQuestion: -1,
     currentScrollDirection: null,
     people: [],
@@ -64,8 +91,8 @@ const archiveDataAction = () => {
       now.getSeconds(),
       now.getMilliseconds()
     ].join("-");
-  return questionsDoc.get().then(questions => {
-    questionsDoc.parent
+  return retroDoc.get().then(questions => {
+    retroDoc.parent
       .doc(archiveDest)
       .set(questions.data())
       .then(() => {
@@ -76,8 +103,13 @@ const archiveDataAction = () => {
 
 export default {
   signInAction,
-  addDatabaseListener,
+  addAllSigninsListener,
+  addSigninSectionListener,
+  addAllPermissionedUsersListener,
+  addRootDatabaseListener,
+  approveUidAction,
   loginToAppAction,
+  joinRetro,
   switchToQuestionAction,
   recordVoteAction,
   bootUserAction,

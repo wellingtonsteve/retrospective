@@ -1,16 +1,40 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /retros/production {
+    /*match /retros/production {
       allow read, write: if request.auth.uid != null
     }
     match /retros/{prodEnv} {
       allow read, write: if (request.auth.uid != null && prodEnv.matches('productionArchive.*') == true)
-    }
-    match /retros/test {
-      allow read, write: if true
+    }*/
+    
+    
+    match /retros/production {
+      allow read, write: if exists(/databases/$(database)/documents/retros/production/permissionedUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/retros/production/permissionedUsers/$(request.auth.uid)).data.user == true
       match /signins/{userId} {
         allow read, write: if request.auth.uid == userId
+        allow read, write: if exists(/databases/$(database)/documents/retros/production/permissionedUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/retros/production/permissionedUsers/$(request.auth.uid)).data.admin == true
+      }
+      match /permissionedUsers/{userId} {
+        allow read, write: if exists(/databases/$(database)/documents/retros/production/permissionedUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/retros/production/permissionedUsers/$(request.auth.uid)).data.admin == true
       }
     }
+    match /retros/{productionEnv} {
+      allow read, write: if (request.auth.uid != null && productionEnv.matches('productionArchive.*') == true)
+    }
+    
+    match /retros/test {
+      allow read, write: if exists(/databases/$(database)/documents/retros/test/permissionedUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/retros/test/permissionedUsers/$(request.auth.uid)).data.user == true
+      match /signins/{userId} {
+        allow read, write: if request.auth.uid == userId
+        allow read, write: if exists(/databases/$(database)/documents/retros/test/permissionedUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/retros/test/permissionedUsers/$(request.auth.uid)).data.admin == true
+      }
+      match /permissionedUsers/{userId} {
+        allow read, write: if exists(/databases/$(database)/documents/retros/test/permissionedUsers/$(request.auth.uid)) && get(/databases/$(database)/documents/retros/test/permissionedUsers/$(request.auth.uid)).data.admin == true
+      }
+    }
+    match /retros/{testEnv} {
+      allow read, write: if (request.auth.uid != null && testEnv.matches('testArchive.*') == true)
+    }
+    
   }
 }
